@@ -36,13 +36,13 @@
             XSizeBox = new TextBox();
             YSizeBox = new TextBox();
             trackBar1 = new TrackBar();
-            startToolStripMenuItem = new ToolStripMenuItem();
-            endToolStripMenuItem = new ToolStripMenuItem();
+            selectStartToolStripMenuItem = new ToolStripMenuItem();
+            selectEndToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1 = new MenuStrip();
-            startToolStripMenuItem1 = new ToolStripMenuItem();
-            toolStripComboBox1 = new ToolStripComboBox();
+            startToolStripMenuItem = new ToolStripMenuItem();
+            generateToolStripMenuItem = new ToolStripMenuItem();
+            pathfinderToolStripComboBox = new ToolStripComboBox();
             timer = new System.Windows.Forms.Timer(components);
-            toolStripMenuItem1 = new ToolStripMenuItem();
             grid.SuspendLayout();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
@@ -65,7 +65,7 @@
             panel1.Controls.Add(YSizeBox);
             panel1.Location = new Point(141, 200);
             panel1.Name = "panel1";
-            panel1.Size = new Size(200, 100);
+            panel1.Size = new Size(233, 127);
             panel1.TabIndex = 4;
             // 
             // label2
@@ -110,56 +110,58 @@
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(508, 45);
             trackBar1.TabIndex = 2;
+            trackBar1.Value = 1;
             trackBar1.Scroll += trackBar1_Scroll;
             // 
-            // startToolStripMenuItem
+            // selectStartToolStripMenuItem
             // 
-            startToolStripMenuItem.Name = "startToolStripMenuItem";
-            startToolStripMenuItem.Size = new Size(77, 23);
-            startToolStripMenuItem.Text = "Select Start";
-            startToolStripMenuItem.Click += startToolStripMenuItem_Click;
+            selectStartToolStripMenuItem.Name = "selectStartToolStripMenuItem";
+            selectStartToolStripMenuItem.Size = new Size(77, 23);
+            selectStartToolStripMenuItem.Text = "Select Start";
+            selectStartToolStripMenuItem.Click += selectStartToolStripMenuItem_Click;
             // 
-            // endToolStripMenuItem
+            // selectEndToolStripMenuItem
             // 
-            endToolStripMenuItem.Name = "endToolStripMenuItem";
-            endToolStripMenuItem.Size = new Size(73, 23);
-            endToolStripMenuItem.Text = "Select End";
-            endToolStripMenuItem.Click += endToolStripMenuItem_Click;
+            selectEndToolStripMenuItem.Name = "selectEndToolStripMenuItem";
+            selectEndToolStripMenuItem.Size = new Size(73, 23);
+            selectEndToolStripMenuItem.Text = "Select End";
+            selectEndToolStripMenuItem.Click += selectEndToolStripMenuItem_Click;
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { startToolStripMenuItem, endToolStripMenuItem, startToolStripMenuItem1, toolStripComboBox1, toolStripMenuItem1 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { startToolStripMenuItem, selectStartToolStripMenuItem, selectEndToolStripMenuItem, generateToolStripMenuItem, pathfinderToolStripComboBox });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(508, 27);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
-            // startToolStripMenuItem1
+            // startToolStripMenuItem
             // 
-            startToolStripMenuItem1.Name = "startToolStripMenuItem1";
-            startToolStripMenuItem1.Size = new Size(66, 23);
-            startToolStripMenuItem1.Text = "Generate";
-            startToolStripMenuItem1.Click += generateToolStripMenuItem1_Click;
+            startToolStripMenuItem.Name = "startToolStripMenuItem";
+            startToolStripMenuItem.Size = new Size(43, 23);
+            startToolStripMenuItem.Text = "Start";
+            startToolStripMenuItem.Click += startToolStripMenuItem_Click;
             // 
-            // toolStripComboBox1
+            // generateToolStripMenuItem
             // 
-            toolStripComboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
-            toolStripComboBox1.Items.AddRange(new object[] { "A*", "Dijkstra's", "BFS", "DFS" });
-            toolStripComboBox1.Name = "toolStripComboBox1";
-            toolStripComboBox1.Size = new Size(121, 23);
-            toolStripComboBox1.ToolTipText = "Algorithm";
+            generateToolStripMenuItem.Name = "generateToolStripMenuItem";
+            generateToolStripMenuItem.Size = new Size(66, 23);
+            generateToolStripMenuItem.Text = "Generate";
+            generateToolStripMenuItem.Click += generateToolStripMenuItem_Click;
+            // 
+            // pathfinderToolStripComboBox
+            // 
+            pathfinderToolStripComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            pathfinderToolStripComboBox.Items.AddRange(new object[] { "A*", "Dijkstra's", "BFS", "DFS" });
+            pathfinderToolStripComboBox.Name = "pathfinderToolStripComboBox";
+            pathfinderToolStripComboBox.Size = new Size(121, 23);
+            pathfinderToolStripComboBox.SelectedIndexChanged += toolStripComboBox1_SelectedIndexChanged;
             // 
             // timer
             // 
-            timer.Interval = 1000;
+            timer.Interval = 500;
             timer.Tick += timer_Tick;
-            // 
-            // toolStripMenuItem1
-            // 
-            toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(125, 23);
-            toolStripMenuItem1.Text = "toolStripMenuItem1";
             // 
             // Visualizer
             // 
@@ -186,19 +188,19 @@
         #endregion
 
         private Panel grid;
-        private ToolStripMenuItem startToolStripMenuItem;
-        private ToolStripMenuItem endToolStripMenuItem;
+        private ToolStripMenuItem selectStartToolStripMenuItem;
+        private ToolStripMenuItem selectEndToolStripMenuItem;
         private MenuStrip menuStrip1;
         private TrackBar trackBar1;
         private ToolStripMenuItem toolStripMenuItem7;
         private System.Windows.Forms.Timer timer;
         private TextBox XSizeBox;
-        private ToolStripMenuItem startToolStripMenuItem1;
+        private ToolStripMenuItem generateToolStripMenuItem;
         private Label label2;
         private TextBox YSizeBox;
         private Label label1;
         private Panel panel1;
-        private ToolStripComboBox toolStripComboBox1;
-        private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripComboBox pathfinderToolStripComboBox;
+        private ToolStripMenuItem startToolStripMenuItem;
     }
 }

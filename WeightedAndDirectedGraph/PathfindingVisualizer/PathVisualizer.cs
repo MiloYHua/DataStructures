@@ -8,6 +8,15 @@ namespace PathfindingVisualizer
 {
     public partial class Visualizer : Form
     {
+        public enum Pathfinder
+        {
+            None,
+            AStar,
+            Dijkstra,
+            BFS,
+            DFS
+        }
+
         public Visualizer()
         {
             InitializeComponent();
@@ -16,66 +25,38 @@ namespace PathfindingVisualizer
         List<Dictionary<Vertex<Point>, VertexState>> cool;
         List<Point> path;
         Graph<Point> graph = new();
-        Vertex<Point> start;
-        Vertex<Point> end;
+        Vertex<Point> start = new(new(-1, 0));
+        Vertex<Point> end = new(new(-1, 0));
         int gridSizeX = 0;
         int gridSizeY = 0;
         ButtonInfo[,] buttons = new ButtonInfo[10, 10];
-        int lastClicked = new();
         public bool selectingStart;
         public bool selectingEnd;
+        public bool isGenerated = false;
         public bool isRunning = false;
+        Pathfinder pathfinder = Pathfinder.None;
+
 
         private void Visualizer_Load(object sender, EventArgs e)
         {
         }
 
-        private void AddEdges(ButtonInfo button)
+        private void ResetButton(ButtonInfo button)
         {
             Vertex<Point>[] vs = graph.Vertices.ToArray();
-
-            int X = buttons.GetLength(0);
-            int Y = buttons.GetLength(1);
-            int x = button.location.X;
-            int y = button.location.Y;
-
-            int index = (y * 10) + x;
-
-            Vertex<Point> vertex = vs[index];
-
-            if (x != (X - 1)) { graph.AddEdge(vertex, vs[index + 1], 1); }
-            if (y != (Y - 1)) { graph.AddEdge(vertex, vs[index + X], 1); }
-            if (x != 0) { graph.AddEdge(vertex, vs[index - 1], 1); }
-            if (y != 0) { graph.AddEdge(vertex, vs[index - X], 1); }
-
-            if (x != 0 && y != (Y - 1)) { graph.AddEdge(vertex, vs[index + (X - 1)], 1.41f); }
-            if (x != (X - 1) && y != (Y - 1)) { graph.AddEdge(vertex, vs[index + (X + 1)], 1.41f); }
-            if (x != (X - 1) && y != 0) { graph.AddEdge(vertex, vs[index - (X - 1)], 1.41f); }
-            if (y != 0 && x != 0) { graph.AddEdge(vertex, vs[index - (X + 1)], 1.41f); }
+            button.isWall = false;
+            button.state = VertexState.Undiscovered;
+            button.BackColor = Color.White;
+            button.ForeColor = Color.Black;
+            button.Text = "Not a wall";
         }
-        private void RemoveEdges(ButtonInfo button)
-        {
-            int i = button.index;
-            int onesPlace = i - (10 * (i / 10));
-            Vertex<Point>[] vs = graph.Vertices.ToArray();
-
-            while (vs[i].Edges.Count > 0)
-            {
-                graph.DualRemoveEdge(vs[i].Edges[0]);
-            }
-        }
-
         private void Wallify(ButtonInfo button)
         {
             if (button.state == VertexState.Start || button.state == VertexState.End) return;
 
             if (button.isWall)
             {
-                button.isWall = false;
-                button.BackColor = Color.White;
-                button.ForeColor = Color.Black;
-                button.Text = "Not a wall";
-                AddEdges(button);
+                ResetButton(button);
                 return;
             }
 
@@ -83,25 +64,32 @@ namespace PathfindingVisualizer
             button.isWall = true;
             button.BackColor = Color.DarkGray;
             button.ForeColor = Color.Yellow;
-            RemoveEdges(button);
         }
 
         private bool StartAndEndSelection(ButtonInfo button)
         {
             if (!(selectingStart | selectingEnd)) return false;
-
             Vertex<Point>[] vs = graph.Vertices.ToArray();
 
             button.isWall = false;
             button.ForeColor = Color.Black;
+
             if (selectingStart)
             {
+                if (start.Value.X != -1)
+                {
+                    ResetButton(buttons[start.Value.X, start.Value.Y]);
+                }
                 button.state = VertexState.Start;
                 button.BackColor = Color.Green;
                 button.Text = "Start";
                 selectingStart = false;
                 start = vs[button.index];
                 return true;
+            }
+            if (end.Value.X != -1)
+            {
+                ResetButton(buttons[end.Value.X, end.Value.Y]);
             }
             button.state = VertexState.End;
             button.BackColor = Color.Red;
@@ -113,9 +101,9 @@ namespace PathfindingVisualizer
 
         private void Button_Click(object sender, EventArgs e)
         {
+            if (isRunning) return;
             Button button = sender as Button;
             Point coords = (Point)button.Tag;
-            lastClicked = ((Point)button.Tag).X + ((Point)button.Tag).Y * 10;
             if (StartAndEndSelection(buttons[coords.X, coords.Y])) return;
 
             Wallify(buttons[coords.X, coords.Y]);
@@ -161,20 +149,12 @@ namespace PathfindingVisualizer
                     break;
             }
         }
-
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!isRunning) return;
+            if (isRunning) return;
+            if (start.Value.X == -1 || end.Value.X == -1) return;
 
-            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-
-            if (menuItem.Text == "Select Start")
-            {
-                selectingStart = true;
-                menuItem.Text = "Start";
-                return;
-            }
-
+            isRunning = true;
             Vertex<Point>[] vs = graph.Vertices.ToArray();
 
             int X = buttons.GetLength(0);
@@ -206,32 +186,24 @@ namespace PathfindingVisualizer
 
             timer.Enabled = true;
         }
-
-        private void endToolStripMenuItem_Click(object sender, EventArgs e)
+        private void selectStartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!isRunning) return;
+            if (isRunning) return;
+            if (!isGenerated) return;
+
+            ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
+
+            selectingStart = true;
+        }
+        private void selectEndToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isRunning) return;
+            if (!isGenerated) return;
 
             ToolStripMenuItem button = sender as ToolStripMenuItem;
 
-            if (button.Text == "Select End")
-            {
-                selectingEnd = true;
-                button.Text = "End";
-            }
+            selectingEnd = true;
         }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            if (trackBar1.Value == 0)
-            {
-                timer.Enabled = false;
-                return;
-            }
-
-
-            timer.Interval = 100 * (trackBar1.Value);
-        }
-
         private void timer_Tick(object sender, EventArgs e)
         {
             if (cool.Count == 0)
@@ -264,24 +236,22 @@ namespace PathfindingVisualizer
 
             cool.Remove(current);
         }
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
             if (!int.TryParse(textBox.Text, out gridSizeX)) gridSizeX = 10;
         }
-
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
             if (!int.TryParse(textBox.Text, out gridSizeY)) gridSizeY = 10;
         }
-
-        private void generateToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void generateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (isGenerated) return;
             buttons = new ButtonInfo[gridSizeX, gridSizeY];
             panel1.Hide();
-            isRunning = true;
+            isGenerated = true;
 
             for (int y = 0; y < gridSizeY; y++)
             {
@@ -290,7 +260,7 @@ namespace PathfindingVisualizer
                     grid.Width = (gridSizeX * 50) + 8;
                     grid.Height = (gridSizeY * 50) + 8;
 
-                    ButtonInfo button = new ButtonInfo(x * gridSizeY + y, new Point(x, y), new Button()
+                    ButtonInfo button = new ButtonInfo(y * gridSizeX + x, new Point(x, y), new Button()
                     {
                         Location = new Point(4 + x * 50, 4 + y * 50),
                         Size = new Size(46, 46),
@@ -310,11 +280,25 @@ namespace PathfindingVisualizer
             Width = grid.Width + 16;
             Height = grid.Height + 111;
         }
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ToolStripComboBox comboBox = sender as ToolStripComboBox;
 
+            pathfinder = (Pathfinder)comboBox.SelectedIndex;
+        }
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            if (trackBar1.Value == 0)
+            {
+                timer.Enabled = false;
+                return;
+            }
+
+            timer.Interval = 500 / (trackBar1.Value + 1);
+        }
         private void Visualizer_Resize(object sender, EventArgs e)
         {
-            trackBar1.Location = new Point(0, Height - (2 * trackBar1.Height));
-            //make the slider stay at the bottom of the form when it resizes.
+            trackBar1.Location = new Point((Width / 2) - (trackBar1.Width / 2), Height - (2 * trackBar1.Height));
         }
     }
 }
