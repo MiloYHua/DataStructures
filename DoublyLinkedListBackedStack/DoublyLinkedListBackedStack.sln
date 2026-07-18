@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoublyLinkedListBackedStack", "DoublyLinkedListBackedStack\DoublyLinkedListBackedStack.csproj", "{4F8D64BA-4A58-4B25-89F2-672E8C382D40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackTest", "StackTest\StackTest.csproj", "{177929A2-B7A0-4FE7-BD3C-FA7B4D1ECAE2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F8D64BA-4A58-4B25-89F2-672E8C382D40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8D64BA-4A58-4B25-89F2-672E8C382D40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8D64BA-4A58-4B25-89F2-672E8C382D40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8D64BA-4A58-4B25-89F2-672E8C382D40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{177929A2-B7A0-4FE7-BD3C-FA7B4D1ECAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{177929A2-B7A0-4FE7-BD3C-FA7B4D1ECAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{177929A2-B7A0-4FE7-BD3C-FA7B4D1ECAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{177929A2-B7A0-4FE7-BD3C-FA7B4D1ECAE2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26B8B88C-5CA3-40E8-868B-5E11240FE31B}
+	EndGlobalSection
+EndGlobal

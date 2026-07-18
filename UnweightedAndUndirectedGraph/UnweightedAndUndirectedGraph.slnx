@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="UnweightedAndUndirectedGraph/UnweightedAndUndirectedGraph.csproj" />
+  <Project Path="UWUDGraphTests/UWUDGraphTests.csproj" Id="b6c58e0e-69d8-491e-9176-6068657cbe83" />
+</Solution>

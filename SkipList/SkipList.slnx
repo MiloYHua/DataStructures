@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../SkipListTest/SkipListTest/SkipListTest.csproj" />
+  <Project Path="SkipList/SkipList.csproj" />
+</Solution>

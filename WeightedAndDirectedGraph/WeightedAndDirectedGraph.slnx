@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PathfindingVisualizer/PathfindingVisualizer.csproj" Id="9255f19b-25c6-4fc6-9e37-a861ee02d91f" />
+  <Project Path="WDGTest/WDGTest.csproj" Id="1d9d2824-0a03-47d8-9942-6b0937f841e6" />
+  <Project Path="WeightedAndDirectedGraph/WeightedAndDirectedGraph.csproj" />
+</Solution>
