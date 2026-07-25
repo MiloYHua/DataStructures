@@ -160,7 +160,7 @@
             // 
             // timer
             // 
-            timer.Interval = 500;
+            timer.Interval = 1000;
             timer.Tick += timer_Tick;
             // 
             // Visualizer
@@ -192,7 +192,6 @@
         private ToolStripMenuItem selectEndToolStripMenuItem;
         private MenuStrip menuStrip1;
         private TrackBar trackBar1;
-        private ToolStripMenuItem toolStripMenuItem7;
         private System.Windows.Forms.Timer timer;
         private TextBox XSizeBox;
         private ToolStripMenuItem generateToolStripMenuItem;

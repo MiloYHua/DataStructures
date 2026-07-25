@@ -10,11 +10,11 @@ namespace PathfindingVisualizer
     {
         public enum Pathfinder
         {
-            None,
             AStar,
             Dijkstra,
             BFS,
-            DFS
+            DFS,
+            None,
         }
 
         public Visualizer()
@@ -181,8 +181,24 @@ namespace PathfindingVisualizer
                     if (y != 0 && x != 0 && !buttons[x - 1, y - 1].isWall) { graph.AddEdge(vertex, vs[index - (X + 1)], 1.41f); }
                 }
             }
+            switch(pathfinder)
+            {
+                case Pathfinder.AStar:
+                    (cool, path) = graph.AStar(start, end, Manhattan);
+                    break;
 
-            (cool, path) = graph.AStar(start, end, Manhattan);
+                case Pathfinder.Dijkstra:
+                    (cool, path) = graph.Dijkstras(start, end);
+                    break;
+
+                case Pathfinder.BFS:
+                    (cool, path) = graph.BFS(start, end);
+                    break;
+
+                case Pathfinder.DFS:
+                    (cool, path) = graph.DFS(start, end);
+                    break;
+            }
 
             timer.Enabled = true;
         }
@@ -257,12 +273,29 @@ namespace PathfindingVisualizer
             {
                 for (int x = 0; x < gridSizeX; x++)
                 {
-                    grid.Width = (gridSizeX * 50) + 8;
-                    grid.Height = (gridSizeY * 50) + 8;
+                    int sizeX = (gridSizeX * 50) + 8;
+                    int sizeY = (gridSizeY * 50) + 8;
+                    int offsetX = 4;
+                    int offsetY = 4;
+
+                    if (gridSizeX < 10)
+                    {
+                        sizeX = 508;
+                        offsetX = (508 - (gridSizeX * 50)) / 2;
+                    }
+                    if (gridSizeY < 5)
+                    {
+                        sizeY = 254;
+                        offsetY = (254 - (gridSizeY * 50)) / 2;
+                    }
+
+                    grid.Width = sizeX;
+                    grid.Height = sizeY;
+
 
                     ButtonInfo button = new ButtonInfo(y * gridSizeX + x, new Point(x, y), new Button()
                     {
-                        Location = new Point(4 + x * 50, 4 + y * 50),
+                        Location = new Point(offsetX + x * 50, offsetY + y * 50),
                         Size = new Size(46, 46),
                         Text = "Not a Wall",
                         BackColor = Color.White,
@@ -277,7 +310,7 @@ namespace PathfindingVisualizer
                 }
             }
 
-            Width = grid.Width + 16;
+            Width = grid.Width + 12;
             Height = grid.Height + 111;
         }
         private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -293,12 +326,13 @@ namespace PathfindingVisualizer
                 timer.Enabled = false;
                 return;
             }
+            if (isRunning) timer.Enabled = true;
 
-            timer.Interval = 500 / (trackBar1.Value + 1);
+            timer.Interval = 1000 / ((trackBar1.Value + 1) * 2);
         }
         private void Visualizer_Resize(object sender, EventArgs e)
         {
-            trackBar1.Location = new Point((Width / 2) - (trackBar1.Width / 2), Height - (2 * trackBar1.Height));
+            trackBar1.Location = new Point((grid.Size.Width / 2) - (trackBar1.Width / 2), Height - (2 * trackBar1.Height));
         }
     }
 }

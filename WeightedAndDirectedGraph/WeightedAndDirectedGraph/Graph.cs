@@ -138,68 +138,80 @@ namespace WeightedAndDirectedGraph
 			return null;
 		}
 
-		public HashSet<Vertex<T>> DFSPathfinding(Vertex<T> a, Vertex<T> b)
+		public (List<Dictionary<Vertex<T>, VertexState>>, List<T>) DFS(Vertex<T> a, Vertex<T> b)
 		{
-			HashSet<Vertex<T>> order = new();
-			Stack<Vertex<T>> backtrackBreadcrumbs = new();
+			List<Dictionary<Vertex<T>, VertexState>> graphChanges = new();
+			List<T> order = new();
+			HashSet<Vertex<T>> visited = new();
+            Stack<Vertex<T>> backtrackBreadcrumbs = new();
 
 			backtrackBreadcrumbs.Push(a);
 
 			while (backtrackBreadcrumbs.Count > 0)
 			{
 				Vertex<T> current = backtrackBreadcrumbs.Pop();
+                graphChanges.Add(new Dictionary<Vertex<T>, VertexState>());
+                graphChanges.Last().Add(current, VertexState.Visited);
 
-				if (current.Edges.Count == 0 || current.Edges.All(x => order.Contains(x.EndVertex)))
+                if (current.Edges.Count == 0 || current.Edges.All(x => visited.Contains(x.EndVertex)))
 				{
-					order.Add(current);
-					continue;
+					order.Add(current.Value);
+					visited.Add(current);
+                    continue;
 				}
 
 				foreach (Edge<T> edge in current.Edges)
 				{
-					if (order.Contains(edge.EndVertex)) break;
+					if (order.Contains(edge.EndVertex.Value)) break;
 
 					backtrackBreadcrumbs.Push(edge.EndVertex);
-				}
+                    graphChanges.Last().Add(edge.EndVertex, VertexState.Frontier);
+                }
 
-				order.Add(current);
-			}
-			return order;
+				order.Add(current.Value);
+                visited.Add(current);
+            }
+			return (graphChanges, order);
 		}
 
-		public List<Vertex<T>> BFSPathfinding(Vertex<T> a, Vertex<T> b)
+		public (List<Dictionary<Vertex<T>, VertexState>> steps, List<T> path) BFS(Vertex<T> a, Vertex<T> b)
 		{
-			List<Vertex<T>> order = new();
+			List<T> order = new();
 			HashSet<Vertex<T>> visited = new();
 			Queue<Vertex<T>> needToVisit = new();
+            List<Dictionary<Vertex<T>, VertexState>> graphChanges = new();
 
 			needToVisit.Enqueue(a);
 
 			while (needToVisit.Count > 0)
 			{
 				Vertex<T> current = needToVisit.Dequeue();
-				order.Add(current);
+				order.Add(current.Value);
+                graphChanges.Add(new Dictionary<Vertex<T>, VertexState>());
+                graphChanges.Last().Add(current, VertexState.Visited);
 
-				foreach (Edge<T> edge in current.Edges)
+                foreach (Edge<T> edge in current.Edges)
 				{
 					if (visited.Contains(edge.EndVertex)) continue;
 					needToVisit.Enqueue(edge.EndVertex);
-					visited.Add(edge.EndVertex);
+                    graphChanges.Last().Add(edge.EndVertex, VertexState.Frontier);
+                    visited.Add(edge.EndVertex);
 				}
 			}
 
-			return order;
+			return (graphChanges, order);
 		}
 
 
-		public List<Vertex<T>> DijkstrasPathfinding(Vertex<T> a, Vertex<T> b)
+		public (List<Dictionary<Vertex<T>, VertexState>> steps, List<T> path) Dijkstras(Vertex<T> a, Vertex<T> b)
 		{
 			Dictionary<Vertex<T>, VertexInfo<T>> vertexInfoMaps = new()
 			{
 				[a] = new VertexInfo<T>(a, 0, null)
 			};
 
-			PriorityQueue<Vertex<T>, float> weightPriority = new();
+            List<Dictionary<Vertex<T>, VertexState>> graphChanges = new();
+            PriorityQueue<Vertex<T>, float> weightPriority = new();
 			HashSet<Vertex<T>> visited = new();
 
 			weightPriority.Enqueue(a, 0);
@@ -211,13 +223,17 @@ namespace WeightedAndDirectedGraph
 				current = weightPriority.Dequeue();
 				if (visited.Contains(current)) continue;
 
-				visited.Add(current);
+                graphChanges.Add(new Dictionary<Vertex<T>, VertexState>());
+                graphChanges.Last().Add(current, VertexState.Visited);
+
+                visited.Add(current);
 
 				foreach (Edge<T> edge in current.Edges)
 				{
 					vertexInfoMaps.TryAdd(edge.EndVertex, new VertexInfo<T>(edge.EndVertex, float.PositiveInfinity, edge));
+                    graphChanges.Last().Add(edge.EndVertex, VertexState.Frontier);
 
-					float totalCost = vertexInfoMaps[edge.EndVertex].TotalCost;
+                    float totalCost = vertexInfoMaps[edge.EndVertex].TotalCost;
 					float tentativeCost = vertexInfoMaps[current].TotalCost + edge.Cost;
 
 					if (tentativeCost < totalCost)
@@ -231,19 +247,19 @@ namespace WeightedAndDirectedGraph
 				if (current == b) break;
 			}
 
-			List<Vertex<T>> path = new();
+			List<T> path = new();
 
 			while (vertexInfoMaps[current].FoundingEdge is not null)
 			{
 				VertexInfo<T> pathfinder = vertexInfoMaps[current];
 
-				path.Add(pathfinder.Vertex);
+				path.Add(pathfinder.Vertex.Value);
 				current = vertexInfoMaps[current].FoundingEdge.StartVertex;
 			}
-			path.Add(a);
+			path.Add(a.Value);
 			path.Reverse();
 
-			return path;
+			return (graphChanges, path);
 		}
 
 		public (List<Dictionary<Vertex<T>, VertexState>> steps, List<T> path) AStar(Vertex<T> a, Vertex<T> b, Func<Vertex<T>, Vertex<T>, float> heuristic)
