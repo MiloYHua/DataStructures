@@ -181,6 +181,7 @@ namespace PathfindingVisualizer
                     if (y != 0 && x != 0 && !buttons[x - 1, y - 1].isWall) { graph.AddEdge(vertex, vs[index - (X + 1)], 1.41f); }
                 }
             }
+
             switch(pathfinder)
             {
                 case Pathfinder.AStar:
