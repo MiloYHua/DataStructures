@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Non-ComparativeSorts/Non-ComparativeSorts.csproj" />
+  <Project Path="SortTests/SortTests.csproj" Id="a72b8da9-456b-4630-8c08-d5c5ce454d9f" />
+</Solution>

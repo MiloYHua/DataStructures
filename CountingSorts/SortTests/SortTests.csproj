@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Non-ComparativeSorts\Non-ComparativeSorts.csproj" />
+    <ProjectReference Include="..\Sorts\Sorts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
