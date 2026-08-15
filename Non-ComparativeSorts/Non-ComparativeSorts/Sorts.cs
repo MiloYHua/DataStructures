@@ -4,7 +4,7 @@ namespace Non_ComparativeSorts
 {
 	public class Sorts<T> where T : IKeyable
 	{
-		public void PigeonholeSort(List<T> vals)
+		public static void PigeonholeSort(List<T> vals)
 		{
 			Dictionary<int, T> dict = new();
 			int[] buckets = new int[vals.Count + 1];
@@ -25,6 +25,54 @@ namespace Non_ComparativeSorts
 				}
 			}
 		}
+
+		private static T IdentifyBiggest(List<T> vals)
+		{
+			T biggest = vals[0];
+			foreach(T val in vals)
+			{
+				if(biggest.Key > val.Key) biggest = val;
+			}
+			return biggest;
+		}
+
+		private static int FindBucket(int val, int range)
+		{
+			int indexer = 0;
+			int bucket = 0;
+			while(indexer < val)
+			{
+				indexer += range;
+				bucket++;
+			}
+			return bucket;
+		}
+
+		private static List<T>[] SectionVals(List<T> vals, int maxVal)
+		{
+			List<T>[] toReturn = new List<T>[vals.Count];
+			List<T> copy = vals;
+
+			int range = maxVal / vals.Count;
+
+            foreach(T val in vals)
+			{
+				int bucketIndex = FindBucket(val.Key, range);
+
+				toReturn[bucketIndex].Add(val);
+			}
+
+			foreach (List<T> values in toReturn)
+			{
+				values.Sort();
+			}
+			return toReturn;
+		}
+
+		public static void BucketSort(List<T> vals)
+		{
+			int biggestKey = IdentifyBiggest(vals).Key;
+		}
 	}
 
 	public interface IKeyable
@@ -32,20 +80,3 @@ namespace Non_ComparativeSorts
 		public int Key { get; }
 	}
 }
-
-//uint maxValue = dataset.GetMaxValue();
-//uint[] buckets = new uint[maxValue + 1];
-
-//foreach (int value in dataset)
-//{
-//	buckets[value]++;
-//}
-
-//int dataIndex = 0;
-//for (uint i = 0; i < buckets.Length; i++)
-//{
-//	while (buckets[i]-- > 0)
-//	{
-//		dataset[dataIndex++] = i;
-//	}
-//}
