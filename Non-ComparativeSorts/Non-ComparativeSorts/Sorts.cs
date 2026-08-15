@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Security;
 
 namespace Non_ComparativeSorts
 {
@@ -31,7 +32,7 @@ namespace Non_ComparativeSorts
 			T biggest = vals[0];
 			foreach(T val in vals)
 			{
-				if(biggest.Key > val.Key) biggest = val;
+				if(biggest.Key < val.Key) biggest = val;
 			}
 			return biggest;
 		}
@@ -51,7 +52,11 @@ namespace Non_ComparativeSorts
 		private static List<T>[] SectionVals(List<T> vals, int maxVal)
 		{
 			List<T>[] toReturn = new List<T>[vals.Count];
-			List<T> copy = vals;
+
+			for (int i = 0; i < toReturn.Length; i++)
+			{
+				toReturn[i] = [];
+			}
 
 			int range = maxVal / vals.Count;
 
@@ -59,7 +64,7 @@ namespace Non_ComparativeSorts
 			{
 				int bucketIndex = FindBucket(val.Key, range);
 
-				toReturn[bucketIndex].Add(val);
+				toReturn[bucketIndex - 1].Add(val);
 			}
 
 			foreach (List<T> values in toReturn)
@@ -72,6 +77,18 @@ namespace Non_ComparativeSorts
 		public static void BucketSort(List<T> vals)
 		{
 			int biggestKey = IdentifyBiggest(vals).Key;
+			List<T>[] sortedSections = SectionVals(vals, biggestKey);
+			List<T> combiner = [];
+
+			foreach(List<T> section in sortedSections)
+			{
+				combiner.AddRange(section);
+			}
+
+			for (int i = 0; i < sortedSections.Length; i++)
+			{
+				vals[i] = combiner[i];
+			}
 		}
 	}
 

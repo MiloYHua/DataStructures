@@ -24,18 +24,24 @@ namespace SortTests
                 sb.Append("I");
             }
 
+            List<int> keysForDebugView = [];
+            foreach (Pigeon pigeon in pigeons)
+            {
+                keysForDebugView.Add(pigeon.Key);
+            }
+
             Sorts<Pigeon>.BucketSort(pigeons);
 
             for (int i = 0; i < pigeons.Count; i++)
             {
-                Assert.Equal(i, pigeons[i].Key);
+                Assert.Equal(i + 1, pigeons[i].Key);
             }
         }
         public int GenerateUnique(Random randy, HashSet<int> seen, int limit)
         {
             while (true)
             {
-                int next = randy.Next(limit);
+                int next = randy.Next(limit) + 1;
                 if (seen.Contains(next)) continue;
                 seen.Add(next);
                 return next;
@@ -57,7 +63,7 @@ namespace SortTests
                 {
                     int num = GenerateUnique(randy, seen, names.Length);
 
-                    string name = names[num];
+                    string name = names[num - 1];
                     pigeons.Add(new Pigeon(num, name));
                 }
 
@@ -65,7 +71,7 @@ namespace SortTests
 
                 for (int i = 0; i < pigeons.Count; i++)
                 {
-                    Assert.Equal(i, pigeons[i].Key);
+                    Assert.Equal(i + 1, pigeons[i].Key);
                 }
             }
         }
