@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Runtime.Versioning;
 using System.Security;
 
 namespace Non_ComparativeSorts
@@ -30,9 +31,9 @@ namespace Non_ComparativeSorts
 		private static T IdentifyBiggest(List<T> vals)
 		{
 			T biggest = vals[0];
-			foreach(T val in vals)
+			foreach (T val in vals)
 			{
-				if(biggest.Key < val.Key) biggest = val;
+				if (biggest.Key < val.Key) biggest = val;
 			}
 			return biggest;
 		}
@@ -41,7 +42,7 @@ namespace Non_ComparativeSorts
 		{
 			int indexer = 0;
 			int bucket = 0;
-			while(indexer < val)
+			while (indexer < val)
 			{
 				indexer += range;
 				bucket++;
@@ -60,7 +61,7 @@ namespace Non_ComparativeSorts
 
 			int range = maxVal / vals.Count;
 
-            foreach(T val in vals)
+			foreach (T val in vals)
 			{
 				int bucketIndex = FindBucket(val.Key, range);
 
@@ -80,7 +81,7 @@ namespace Non_ComparativeSorts
 			List<T>[] sortedSections = SectionVals(vals, biggestKey);
 			List<T> combiner = [];
 
-			foreach(List<T> section in sortedSections)
+			foreach (List<T> section in sortedSections)
 			{
 				combiner.AddRange(section);
 			}
@@ -89,6 +90,55 @@ namespace Non_ComparativeSorts
 			{
 				vals[i] = combiner[i];
 			}
+		}
+
+		public static List<int> RadixSort(List<T> vals)
+		{
+			Dictionary<int, T> keyToKeyable = [];
+
+			List<int> result = [];
+			int[] key = new int[10];
+
+			int biggest = IdentifyBiggest(vals).Key;
+			int digits = (int)Math.Ceiling(Math.Log10(biggest));
+
+			foreach (T val in vals)
+			{
+				result.Add(val.Key);
+			}
+
+			for (int i = 0; i < digits; i++)
+			{
+				foreach (int val in result)
+				{
+					int digit1 = val % 10;
+
+					key[digit1]++;
+				}
+
+				int prev = 0;
+
+				for (int x = 0; x < key.Length; x++)
+				{
+					key[x] += prev;
+					prev = key[x];
+				}
+
+				List<int> temp = [];
+				foreach(int val in result)
+				{
+					temp.Add(val);
+				}
+
+				foreach (int val in result)
+				{
+					int index = key[val] - 1;
+					temp[index] = val;
+				}
+
+				result = temp;
+			}
+			return result;
 		}
 	}
 

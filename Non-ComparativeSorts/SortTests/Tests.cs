@@ -8,6 +8,31 @@ namespace SortTests
     public class Tests
     {
         [Fact]
+        public void RadixTest()
+        {
+			Random randy = new Random();
+
+			List<Pigeon> pigeons = [];
+			HashSet<int> seen = [];
+
+			StringBuilder sb = new StringBuilder();
+
+			for (int i = 0; i < 10; i++)
+			{
+				pigeons.Add(new(GenerateUnique(randy, seen, 10)-1, $"Billy Johnson {sb}"));
+
+				sb.Append("I");
+			}
+
+			List<int> sortedKeys = Sorts<Pigeon>.RadixSort(pigeons);
+
+			for (int i = 0; i < pigeons.Count; i++)
+			{
+				Assert.Equal(i, sortedKeys[i]);
+			}
+		}
+
+        [Fact]
         public void BucketSortTest()
         {
             Random randy = new Random();
@@ -47,6 +72,7 @@ namespace SortTests
                 return next;
             }
         }
+
         [Theory]
         [InlineData(123, 42345, 73451, 34656, 235435, 56834545, 762435, 762345, 643265)]
         [InlineData(654, 24567, 48754, 53246, 46823, 52345, 6798, 2345234, 6867, 2345)]
