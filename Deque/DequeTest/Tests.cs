@@ -41,7 +41,7 @@ namespace DequeTest
                 dequeStack.Enqueue(next);
                 expected[i] = next;
             }
-
+            KeyValuePair
             for (int i = 0; i < 10; i++)
             {
                 Assert.Equal(expected[i], dequeStack.Dequeue());
