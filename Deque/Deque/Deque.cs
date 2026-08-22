@@ -1,23 +1,27 @@
-﻿namespace Deque
+﻿namespace DequeAndInterfaces
 {
     public class Deque<T> : IDeque<T>, IStack<T>, IQueue<T>
     {
-        LinkedList<T> List { get; set; } = [];
+        LinkedList<T> list = [];
+
+        public int Length { get; private set; } = 0;
 
         #region Queue Elements
         void IQueue<T>.Enqueue(T value)
         {
             if (value is null) throw new ArgumentNullException("Given value is null.");
 
-            List.AddLast(value);
+            list.AddLast(value);
+            Length++;
         }
 
         T IQueue<T>.Dequeue()
         {
-            if (List.First is null) throw new NullReferenceException("Empty deque.");
+            if (list.First is null) throw new NullReferenceException("Empty deque.");
 
-            T removed = List.First.Value;
-            List.RemoveFirst();
+            T removed = list.First.Value;
+            list.RemoveFirst();
+            Length--;
             return removed;
         }
         #endregion
@@ -26,15 +30,17 @@
         void IStack<T>.Push(T value)
         {
             if(value is null) throw new ArgumentNullException("Given value is null.");
-            List.AddFirst(value);
+            list.AddFirst(value);
+            Length++;
         }
 
         T IStack<T>.Pop()
         {
-            if (List.First is null) throw new NullReferenceException("Empty deque.");
+            if (list.First is null) throw new NullReferenceException("Empty deque.");
 
-            T removed = List.First.Value;
-            List.RemoveFirst();
+            T removed = list.First.Value;
+            list.RemoveFirst();
+            Length--;
             return removed;
         }
         #endregion
@@ -44,14 +50,16 @@
         {
             if(value is null) throw new ArgumentNullException("Given value is null.");
 
-            List.AddFirst(value);
+            list.AddFirst(value);
+            Length++;
         }
 
         public T PopFront()
         {
-            if (List.First is null) throw new NullReferenceException("Empty deque.");
-            T removed = List.First.Value;
-            List.RemoveFirst();
+            if (list.First is null) throw new NullReferenceException("Empty deque.");
+            T removed = list.First.Value;
+            list.RemoveFirst();
+            Length--;
 
             return removed;
         }
@@ -65,35 +73,37 @@
         {
             if (value is null) throw new ArgumentNullException("Given value is null.");
 
-            List.AddLast(value);
+            list.AddLast(value);
+            Length++;
         }
 
         public T PopBack()
         {
-            if (List.Last is null) throw new NullReferenceException("Empty deque.");
-            T removed = List.Last.Value;
-            List.RemoveLast();
+            if (list.Last is null) throw new NullReferenceException("Empty deque.");
+            T removed = list.Last.Value;
+            list.RemoveLast();
+            Length--;
 
             return removed;
         }
 
         public T PeekBack()
         {
-            if (List.Last is null) throw new NullReferenceException("Empty deque.");
-            return List.Last.Value;
+            if (list.Last is null) throw new NullReferenceException("Empty deque.");
+            return list.Last.Value;
         }
         #endregion
 
         #region loner 🤣🤣🤣🤣🤣🤣🤣🤣🤣
         public T Peek()
         {
-            if (List.First is null) throw new NullReferenceException("Empty deque.");
-            return List.First.Value;
+            if (list.First is null) throw new NullReferenceException("Empty deque.");
+            return list.First.Value;
         }
         #endregion
     }
 
-    interface IDeque<T>
+    public interface IDeque<T>
     {
         public void PushFront(T value);
         public T PopFront();
@@ -104,14 +114,14 @@
         public T PeekBack();
     }
 
-    interface IStack<T>
+    public interface IStack<T>
     {
         public void Push(T value);
         public T Pop();
         public T Peek();
     }
 
-    interface IQueue<T>
+    public interface IQueue<T>
     {
         public void Enqueue(T value);
         public T Dequeue();
