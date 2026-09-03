@@ -28,9 +28,9 @@ namespace HashMapADT
 
         public int Count { get; private set; }
 
-        public ICollection<TKey> Keys { get; }
+        public ICollection<TKey> Keys { get; } = [];
 
-        public ICollection<TValue> Values { get; }
+        public ICollection<TValue> Values { get; } = [];
 
         public bool IsReadOnly => false;
 
@@ -38,18 +38,21 @@ namespace HashMapADT
         {
             keyComparer = comparer;
             Buckets = buckets;
+            Count = buckets.Length;
         }
 
         public HashMap(LinkedList<Pair<TKey, TValue>>[] buckets)
             : this(EqualityComparer<TKey>.Default, buckets)
         {
             Buckets = buckets;
+            Count = buckets.Length;
         }
 
         public HashMap()
             : this(EqualityComparer<TKey>.Default, [])
         {
-
+            Buckets = new LinkedList<Pair<TKey, TValue>>[8];
+            Count = 8;
         }
 
         public int ComputeIndex(TKey key)
@@ -101,6 +104,8 @@ namespace HashMapADT
                 toAdd.AddFirst(pair);
 
                 Buckets[index] = toAdd;
+                Keys.Add(pair.Key);
+                Values.Add(pair.Value);
                 return;
             }
             throw new ArgumentException($"Given key: '{pair.Key}' already exists.");
@@ -111,7 +116,7 @@ namespace HashMapADT
 
                 foreach (LinkedList<Pair<TKey, TValue>> bucket in Buckets)
                 {
-                    if (bucket is null) continue;
+                    if (bucket is null) continue;   
 
                     newBuckets[ComputeNewIndex(key)] = bucket;
                 }
@@ -228,7 +233,7 @@ namespace HashMapADT
                     yield return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
                 }
                 num++;
-                curr = Buckets[num];  // move onto the next
+                curr = Buckets[num];
             }
         }
 
