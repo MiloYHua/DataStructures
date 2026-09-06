@@ -4,26 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace HashMapADT
 {
-    public struct Pair<TKey, TValue>
-    {
-        public TKey Key { get; }
-        public TValue Value { get; }
-
-        public Pair(TKey key, TValue value)
-        {
-            Key = key;
-            Value = value;
-        }
-
-        public Pair(KeyValuePair<TKey, TValue> KVPair)
-        {
-            Key = KVPair.Key;
-            Value = KVPair.Value;
-        }
-    }
     public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        LinkedList<Pair<TKey, TValue>>[] Buckets;
+        LinkedList<KeyValuePair<TKey, TValue>>[] Buckets;
         private readonly IEqualityComparer<TKey> keyComparer;
 
         public int Count { get; private set; }
@@ -34,14 +17,14 @@ namespace HashMapADT
 
         public bool IsReadOnly => false;
 
-        public HashMap(IEqualityComparer<TKey> comparer, LinkedList<Pair<TKey, TValue>>[] buckets)
+        public HashMap(IEqualityComparer<TKey> comparer, LinkedList<KeyValuePair<TKey, TValue>>[] buckets)
         {
             keyComparer = comparer;
             Buckets = buckets;
             Count = buckets.Length;
         }
 
-        public HashMap(LinkedList<Pair<TKey, TValue>>[] buckets)
+        public HashMap(LinkedList<KeyValuePair<TKey, TValue>>[] buckets)
             : this(EqualityComparer<TKey>.Default, buckets)
         {
             Buckets = buckets;
@@ -51,12 +34,13 @@ namespace HashMapADT
         public HashMap()
             : this(EqualityComparer<TKey>.Default, [])
         {
-            Buckets = new LinkedList<Pair<TKey, TValue>>[8];
-            Count = 8;
+            Buckets = new LinkedList<KeyValuePair<TKey, TValue>>[8];
+            Count = 0;
         }
 
         public int ComputeIndex(TKey key)
         {
+            if (Buckets.Length < 0) throw new ArgumentException("Bucket was empty");
             int hashCode = key.GetHashCode();
             return Math.Abs(hashCode % Buckets.Length);
         }
@@ -67,17 +51,18 @@ namespace HashMapADT
             return Math.Abs(hashCode % (Buckets.Length * 2));
         }
 
-        public Pair<TKey, TValue> GetPair(TKey key)
+        public KeyValuePair<TKey, TValue> GetPair(TKey key)
         {
             int index = ComputeIndex(key);
 
-            LinkedList<Pair<TKey, TValue>> bucket = Buckets[index];
+            LinkedList<KeyValuePair<TKey, TValue>> bucket = Buckets[index];
 
-            for (int i = 0; i < Buckets.Length; i++)
+            for (int i = 0; i < bucket.Count; i++)
             {
-                Pair<TKey, TValue> pair = bucket.ToArray()[i];
+                KeyValuePair<TKey, TValue> KeyValuePair = bucket.ToArray()[i];
 
-                if (keyComparer.Equals(pair.Key, key)) return pair;
+                if (keyComparer.Equals(KeyValuePair.Key, key))
+                    return KeyValuePair;
             }
             throw new ArgumentException($"Given key: '{key}' is not found.");
         }
@@ -87,75 +72,42 @@ namespace HashMapADT
             return GetPair(key).Value;
         }
 
-        private void Add(Pair<TKey, TValue> pair)
-        {
-            int index = ComputeIndex(pair.Key);
-
-            if (index >= Buckets.Length)
-            {
-                Rehash(pair.Key);
-            }
-
-            Count++;
-
-            if (Buckets[index] is null || Buckets.Length == 0)
-            {
-                LinkedList<Pair<TKey, TValue>> toAdd = [];
-                toAdd.AddFirst(pair);
-
-                Buckets[index] = toAdd;
-                Keys.Add(pair.Key);
-                Values.Add(pair.Value);
-                return;
-            }
-            throw new ArgumentException($"Given key: '{pair.Key}' already exists.");
-
-            void Rehash(TKey key)
-            {
-                LinkedList<Pair<TKey, TValue>>[] newBuckets = [];
-
-                foreach (LinkedList<Pair<TKey, TValue>> bucket in Buckets)
-                {
-                    if (bucket is null) continue;   
-
-                    newBuckets[ComputeNewIndex(key)] = bucket;
-                }
-                Buckets = newBuckets;
-            }
-        }
-
-        private bool Remove(TKey key)
-        {
-            if (key is null) throw new ArgumentNullException($"Key: '{key}' is null.");
-
-            int index = ComputeIndex(key);
-            LinkedList<Pair<TKey, TValue>> bucket = Buckets[index];
-
-            foreach (Pair<TKey, TValue> pair in bucket)
-            {
-                if (!keyComparer.Equals(pair.Key, key)) continue;
-
-                bucket.Remove(pair);
-                return true;
-            }
-            return false;
-        }
-
         public void Add(TKey key, TValue value)
         {
-            Add(new Pair<TKey, TValue>(key, value));
+            Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
         public bool ContainsKey(TKey key)
         {
+            if (Buckets.Length == 0) return false;
             int index = ComputeIndex(key);
-            if (Buckets[index] is not null) return true;
+            LinkedList<KeyValuePair<TKey, TValue>> bucket = Buckets[index];
+
+            foreach (KeyValuePair<TKey, TValue> kvp in bucket)
+            {
+                if (keyComparer.Equals(kvp.Key, key)) return true;
+            }
+
             return false;
         }
 
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        public bool Remove(TKey key)
         {
-            return Remove(key);
+            if (key is null) throw new ArgumentNullException($"Key: '{key}' is null.");
+
+            int index = ComputeIndex(key);
+            LinkedList<KeyValuePair<TKey, TValue>> bucket = Buckets[index];
+
+            foreach (KeyValuePair<TKey, TValue> KeyValuePair in bucket)
+            {
+                if (!keyComparer.Equals(KeyValuePair.Key, key)) continue;
+
+                bucket.Remove(KeyValuePair);
+                Values.Remove(KeyValuePair.Value);
+                Keys.Remove(KeyValuePair.Key);
+                return true;
+            }
+            return false;
         }
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
@@ -163,7 +115,7 @@ namespace HashMapADT
             foreach (TKey findKey in Keys)
             {
                 if (!keyComparer.Equals(findKey, key)) continue;
-                value = GetPair(key).Value;
+                value = GetPair(findKey).Value;
                 return true;
             }
             value = default(TValue);
@@ -172,7 +124,46 @@ namespace HashMapADT
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            Add(new Pair<TKey, TValue>(item));
+            int index = ComputeIndex(item.Key);
+
+            if (index >= Buckets.Length)
+            {
+                Rehash(item.Key);
+            }
+
+            Count++;
+
+            if (Buckets[index] is null)
+            {
+                LinkedList<KeyValuePair<TKey, TValue>> toAdd = [];
+                toAdd.AddFirst(item);
+
+                Buckets[index] = toAdd;
+                Keys.Add(item.Key);
+                Values.Add(item.Value);
+                return;
+            }
+            if (Contains(item))
+            {
+                throw new ArgumentException($"Given value: '{item.Value}' already exists.");
+            }
+            Buckets[index].AddFirst(item);
+            Keys.Add(item.Key);
+            Values.Add(item.Value);
+            return;
+
+            void Rehash(TKey key)
+            {
+                LinkedList<KeyValuePair<TKey, TValue>>[] newBuckets = [];
+
+                foreach (LinkedList<KeyValuePair<TKey, TValue>> bucket in Buckets)
+                {
+                    if (bucket is null) continue;
+
+                    newBuckets[ComputeNewIndex(key)] = bucket;
+                }
+                Buckets = newBuckets;
+            }
         }
 
         public void Clear()
@@ -188,32 +179,15 @@ namespace HashMapADT
             if (!ContainsKey(item.Key)) return false;
 
             int index = ComputeIndex(item.Key);
-            if (Buckets[index].Contains(new Pair<TKey, TValue>(item))) return true;
+            if (Buckets[index].Contains(item)) return true;
             return false;
-        }
-
-        private KeyValuePair<TKey, TValue>[] ToKVArray(LinkedList<Pair<TKey, TValue>> bucket)
-        {
-            KeyValuePair<TKey, TValue>[] kvps = new KeyValuePair<TKey, TValue>[bucket.Count];
-            int index = 0;
-            foreach (Pair<TKey, TValue> pair in bucket)
-            {
-                kvps[index] = new(pair.Key, pair.Value);
-            }
-            return kvps;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            int num = 0;
-            for (int i = arrayIndex; i < Buckets.Length - arrayIndex; i++)
+            foreach (var pair in this)
             {
-                foreach (Pair<TKey, TValue> pair in Buckets[i])
-                {
-                    if (num >= array.Length) throw new ArgumentException("Array is too small.");
-                    array[num] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
-                    num++;
-                }
+                array[arrayIndex++] = pair;
             }
         }
 
@@ -224,16 +198,13 @@ namespace HashMapADT
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            LinkedList<Pair<TKey, TValue>> curr = Buckets[0];
-            int num = 0;
-            while (curr != null)
+            foreach (LinkedList<KeyValuePair<TKey, TValue>> bucket in Buckets)
             {
-                foreach(Pair<TKey, TValue> pair in curr)
+                if (bucket is null) continue;
+                foreach (KeyValuePair<TKey, TValue> KeyValuePair in bucket)
                 {
-                    yield return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
+                    yield return new KeyValuePair<TKey, TValue>(KeyValuePair.Key, KeyValuePair.Value);
                 }
-                num++;
-                curr = Buckets[num];
             }
         }
 
@@ -246,16 +217,19 @@ namespace HashMapADT
             {
                 int index = ComputeIndex(key);
 
-                LinkedList<Pair<TKey, TValue>> bucket = Buckets[index];
+                LinkedList<KeyValuePair<TKey, TValue>> bucket = Buckets[index];
 
                 for (int i = 0; i < Buckets.Length; i++)
                 {
-                    Pair<TKey, TValue> pair = bucket.ToArray()[i];
+                    KeyValuePair<TKey, TValue> KeyValuePair = bucket.ToArray()[i];
 
-                    if (keyComparer.Equals(pair.Key, key)) pair = new Pair<TKey, TValue>(key, value);
-                    return;
+                    if (keyComparer.Equals(KeyValuePair.Key, key))
+                    {
+                        KeyValuePair = new KeyValuePair<TKey, TValue>(key, value);
+                        return;
+                    }
                 }
-                bucket.AddFirst(new Pair<TKey, TValue>(key, value));
+                bucket.AddFirst(new KeyValuePair<TKey, TValue>(key, value));
             }
         }
     }
