@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Shellsort/Shellsort.csproj" />
+  <Project Path="SortTest/SortTest.csproj" Id="c03cab92-c5da-419d-b73d-f7c8df387227" />
 </Solution>
