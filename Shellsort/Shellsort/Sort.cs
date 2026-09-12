@@ -13,17 +13,14 @@
         {
             for (int i = 1; i < collection.Length; i++)
             {
-                for (int j = i; j >= 0; j--)
-                {
-                    if(j == 0)
-                    {
-                        ;
-                    }
-                    int gap = collection.Length / (int)Math.Pow(2, i);
+                int gap = collection.Length / (int)Math.Pow(2, i);
+                if (gap == 0) gap = 1;
 
-                    if (comparer.Compare(collection[j], collection[j + (1 * gap)]) > 0)
+                for (int j = gap; j < collection.Length; j += gap)
+                {
+                    if (comparer.Compare(collection[j], collection[j - gap]) > 0)
                     {
-                        Swap(ref collection[j], ref collection[j + (1 * gap)]);
+                        Swap(ref collection[j], ref collection[j - gap]);
                     }
                 }
             }

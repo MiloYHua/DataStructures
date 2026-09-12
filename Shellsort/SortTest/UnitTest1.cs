@@ -5,17 +5,22 @@ namespace SortTest
     public class UnitTest1
     {
         [Fact]
-        public void ShellSort_SortsIntegersAscending()
+        public void ShellSort()
         {
-            int[] input = [ 5, 3, 8, 1 ];
-            int[] expected = new int[input.Length];
+            Random random = new Random();
+            List<int> actual = new List<int>();
 
-            Array.Copy(input, expected, input.Length);
+            for (int i = 0; i < 10; i++)
+            {
+                actual.Add(random.Next(1, 100));
+            }
+
+            int[] expected = actual.ToArray();
             Array.Sort(expected);
 
-            Sort<int>.ShellSort(input, Comparer<int>.Default);
+            Sort<int>.ShellSort(actual.ToArray(), Comparer<int>.Default);
 
-            Assert.Equal(expected, input);
+            Assert.Equal(expected, actual);
         }
     }
 }
