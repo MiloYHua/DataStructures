@@ -11,19 +11,28 @@
 
         public static void ShellSort(T[] collection, IComparer<T> comparer)
         {
-            for (int i = 1; i < collection.Length; i++)
+            //looping from 0 to second to last index to be able to compare a value in front of the current index
+            for (int i = 0; i < collection.Length - 1; i++)
             {
-                int gap = collection.Length / (int)Math.Pow(2, i);
+                int gap = collection.Length / (int)Math.Pow(2, i + 1);
                 if (gap == 0) gap = 1;
 
-                for (int j = gap; j < collection.Length; j += gap)
+                for (int j = i + gap; j >= gap; j -= gap)
                 {
-                    if (comparer.Compare(collection[j], collection[j - gap]) > 0)
+                    //if the next value(index j) is smaller than the j - 1
+                    //SWAP
+                    //else stop checking and go to the next value of i
+                    if (comparer.Compare(collection[j], collection[j - gap]) < 0)
                     {
                         Swap(ref collection[j], ref collection[j - gap]);
+                    }
+                    else
+                    {
+                        
                     }
                 }
             }
         }
+
     }
 }

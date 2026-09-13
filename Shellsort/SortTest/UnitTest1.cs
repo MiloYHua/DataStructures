@@ -8,17 +8,18 @@ namespace SortTest
         public void ShellSort()
         {
             Random random = new Random();
-            List<int> actual = new List<int>();
+            int[] actual = new int[15];
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < actual.Length; i++)
             {
-                actual.Add(random.Next(1, 100));
+                actual[i] = random.Next(1, 100);
             }
 
-            int[] expected = actual.ToArray();
+            int[] expected = new int[actual.Length];
+            Array.Copy(actual, expected, actual.Length);
             Array.Sort(expected);
 
-            Sort<int>.ShellSort(actual.ToArray(), Comparer<int>.Default);
+            Sort<int>.ShellSort(actual, Comparer<int>.Default);
 
             Assert.Equal(expected, actual);
         }
