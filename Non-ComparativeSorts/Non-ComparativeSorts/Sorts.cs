@@ -28,6 +28,30 @@ namespace Non_ComparativeSorts
 			}
 		}
 
+		public static void SelecterPigeonholeSort(List<T> vals, Func<T, int> selector)
+		{
+			LinkedList<T>[] buckets = new LinkedList<T>[vals.Count];
+			for(int i = 0; i < buckets.Length; i++)
+			{
+				buckets[i] = [];
+			}
+
+			foreach (T value in vals)
+			{
+				buckets[selector(value)-1].AddFirst(value);
+			}
+
+			int index = 0;
+
+			for (int i = 0; i < buckets.Length; i++)
+			{
+				foreach(T val in buckets[i])
+				{
+					vals[index++] = val;
+				}
+			}
+		}
+
 		private static T IdentifyBiggest(List<T> vals)
 		{
 			T biggest = vals[0];
