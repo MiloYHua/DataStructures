@@ -75,7 +75,7 @@ namespace UnionFind
         }
 
         public bool AreConnected(T p, T q)
-        {+
+        {
             if (p is null || q is null) return false;
 
             if (Pairs[q] == Pairs[p]) return true;
