@@ -68,8 +68,10 @@ namespace UnionFind
             LinkedList<T> setP = Sets[Pairs[p]];
             foreach (T item in setP)
             {
-                Pairs[item] = Pairs[p];
+                Pairs[item] = Pairs[q];
+                Sets[Pairs[q]].AddFirst(item);
             }
+            setP.Clear();
 
             return true;
         }
