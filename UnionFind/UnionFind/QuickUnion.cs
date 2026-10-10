@@ -86,24 +86,24 @@ namespace UnionFind
 		private int ConnectSetID(Node<T> node, int setID)
 		{
 			int currentID = -1;
-			Node<T> traveller = new(node);
-			while (currentID != traveller.ParentID)
+			while (currentID != node.ParentID)
 			{
-				currentID = traveller.ParentID;
-				nodeToSet[traveller] = setID;
-				traveller = indexToParent[traveller.ParentID];
+				currentID = node.ParentID;
+				nodeToSet[node] = setID;
+                node = indexToParent[node.ParentID];
 			}
 			return currentID;
 		}
 
 		public bool Add(T item)
 		{
-			if (item is null || !nodeToSet.TryAdd(new(0, item), Count)) return false;
+			if (item is null) return false;
 			if (Length == Count) Resize();
 
 			Node<T> node = new(Count, 0, item);
+			if (!nodeToSet.TryAdd(node, Count)) return false;
+
 			indexToParent[Count] = node;
-			nodeToSet.Add(node, Count);
 			IncrementHeights(node);
 			Count++;
 			return true;
