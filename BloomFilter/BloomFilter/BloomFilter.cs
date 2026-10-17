@@ -5,17 +5,21 @@ namespace BloomFilter
     public class BloomFilter<T>
     {
         public bool[] hashCodeExists = new bool[1000]; // Size of the bit array
-        private Func<T, int>[] hashToIndexFuncs = new Func<T, int>[3];
+        private Func<T, int>[] hashToIndexFuncs = new Func<T, int>[4];
 
-        private int HashToIndexA(T item) => Math.Abs(item.GetHashCode()) % hashCodeExists.Length;
-        private int HashToIndexB(T item) => Math.Abs(item.GetHashCode() * 50) % hashCodeExists.Length;
-        private int HashToIndexC(T item) => Math.Abs(item.GetHashCode() * 239048843) % hashCodeExists.Length;
+        int DefaultHash(T item) => item.GetHashCode() % hashCodeExists.Length;
+        int currentHashFuncIndex = 0;
 
         public BloomFilter()
         {
-            hashToIndexFuncs[0] = HashToIndexA;
-            hashToIndexFuncs[1] = HashToIndexB;
-            hashToIndexFuncs[2] = HashToIndexC;
+            hashToIndexFuncs[0] = DefaultHash;
+            currentHashFuncIndex++;
+        }
+
+        public void LoadHash(Func<T, int> hashToIndexFunc)
+        {
+            hashToIndexFuncs[currentHashFuncIndex] = hashToIndexFunc;
+            currentHashFuncIndex++;
         }
 
         public void Add(T item)
