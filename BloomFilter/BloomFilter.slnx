@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="BloomFilter/BloomFilter.csproj" />
+  <Project Path="BloomFilterTest/BloomFilterTest.csproj" Id="04a5f618-aef6-4837-9283-8534898f6e7f" />
 </Solution>
