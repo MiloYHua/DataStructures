@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LRUCache/LeastRecentlyUsedCache.csproj" />
+  <Project Path="LRUCacheTest/LRUCacheTest.csproj" Id="276a3219-eaeb-4f95-8ec2-8f984f162a0d" />
+</Solution>
